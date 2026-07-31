@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -21,3 +22,9 @@ def test_compose_binds_only_loopback_and_one_worker() -> None:
     assert "sub2api_default" in compose
     assert '"--workers", "1"' in dockerfile
     assert '"--no-access-log"' in dockerfile
+
+
+def test_readonly_role_script_never_embeds_a_password() -> None:
+    script = Path("deploy/create-readonly-role.sql").read_text(encoding="utf-8")
+    assert "\\password sub2api_audit_reader" in script
+    assert not re.search(r"PASSWORD\s+'[^']+'", script, flags=re.IGNORECASE)

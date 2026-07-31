@@ -71,8 +71,11 @@ openssl rand -base64 32
 ## 只读 PostgreSQL 账号
 
 以管理员身份审阅并执行
-[`deploy/create-readonly-role.sql`](deploy/create-readonly-role.sql)。随后用该
-账号验证 `SELECT` 成功、`UPDATE` 失败，再将 DSN 写入 `.env`。
+[`deploy/create-readonly-role.sql`](deploy/create-readonly-role.sql)。必须使用
+交互式 `psql` 执行；脚本末尾的 `\password` 会安全提示输入密码，部署脚本和 Git
+历史中都不应出现实际密码。推荐用 `openssl rand -hex 32` 生成密码并粘贴到提示中。
+随后用该账号验证 `SELECT` 成功、`UPDATE` 失败，再将 DSN 仅写入被 Git 忽略的
+`.env`。
 
 应用连接时还会设置：
 
@@ -81,9 +84,8 @@ default_transaction_read_only=on
 statement_timeout=2000
 ```
 
-PostgreSQL 不可用、超时或 token 不存在时，请求仍会写入 SQLite，并将关联
-状态标为 `unavailable` 或 `not_found`。驱动异常内容不会写入日志，避免 DSN
-凭据泄漏。
+PostgreSQL 不可用、超时或 token 不存在时无法确认用户归属，因此不会采集该请求。
+驱动异常内容不会写入日志，避免 DSN 凭据泄漏。
 
 ## 启动审计服务
 
