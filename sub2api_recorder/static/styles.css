@@ -219,6 +219,7 @@ h1, h2, h3, p { margin: 0; }
 .button-primary { background: var(--accent); color: #06241c; box-shadow: 0 8px 26px #35c99522; }
 .button-primary:hover:not(:disabled) { background: #8aebcb; }
 .button-quiet { border-color: var(--line); background: #111821; color: var(--text-soft); }
+.open_in_new_tab { flex: 0 0 100px; }
 .button-quiet:hover:not(:disabled) { border-color: var(--line-bright); background: var(--surface-soft); color: var(--text); }
 .button-compact { min-height: 36px; padding: .48rem .72rem; font-size: .78rem; }
 .button-icon-text { min-height: 36px; padding: .45rem .75rem; font-size: .78rem; }
