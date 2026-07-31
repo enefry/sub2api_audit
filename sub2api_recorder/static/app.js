@@ -1,5 +1,15 @@
 "use strict";
 
+function isEmbeddedPage() {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
+document.documentElement.classList.toggle("is-embedded", isEmbeddedPage());
+
 const auditBase = window.location.pathname.startsWith("/admin/audit/")
   ? "/admin/audit"
   : "/audit";
