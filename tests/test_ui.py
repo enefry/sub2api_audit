@@ -44,6 +44,8 @@ def test_audit_ui_controls_match_javascript_contract() -> None:
     assert 'id="page-title"' not in html
     assert 'data-range="today" class="is-active"' in html
     assert "setRange(\"today\")" in javascript
+    assert "nextCalendarDate(today)" in javascript
+    assert "00:00 — 24:00" in html
     assert "aria-live=\"polite\"" in html
     assert "`${auditBase}/api/context`" in javascript
     assert 'const auditBase = window.location.pathname.startsWith("/admin/audit/")' in javascript

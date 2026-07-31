@@ -131,16 +131,24 @@ function serviceNow() {
   return new Date(Date.now() + serverClockOffsetMs);
 }
 
+function nextCalendarDate(dateText) {
+  const date = new Date(`${dateText}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
 function setRange(range, shouldLoad = false) {
   const end = serviceNow();
   const normalizedRange = String(range);
-  endInput.value = localInputValue(end);
   if (normalizedRange === "today") {
-    startInput.value = `${endInput.value.slice(0, 10)}T00:00`;
+    const today = localInputValue(end).slice(0, 10);
+    startInput.value = `${today}T00:00`;
+    endInput.value = `${nextCalendarDate(today)}T00:00`;
   } else {
     const hours = Number(normalizedRange);
     const start = new Date(end.getTime() - hours * 60 * 60 * 1000);
     startInput.value = localInputValue(start);
+    endInput.value = localInputValue(end);
   }
   activeRange = normalizedRange;
   rangeButtons.forEach((button) => {
@@ -341,14 +349,15 @@ function updateRangeMetric() {
   }
   if (activeRange === "today") {
     metricRange.textContent = "今天";
+    metricRangeNote.textContent = `${startInput.value.slice(0, 10)} · 00:00 — 24:00`;
   } else {
     metricRange.textContent = hours <= 48
       ? `${Math.round(hours)}h`
       : `${Math.round(hours / 24)}d`;
+    const startLabel = startInput.value.replace("T", " ");
+    const endLabel = endInput.value.replace("T", " ");
+    metricRangeNote.textContent = `${startLabel} — ${endLabel}`;
   }
-  const startLabel = startInput.value.replace("T", " ");
-  const endLabel = endInput.value.replace("T", " ");
-  metricRangeNote.textContent = `${startLabel} — ${endLabel}`;
 }
 
 function updateMetrics() {
