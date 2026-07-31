@@ -1,4 +1,4 @@
-FROM python:3.12.11-slim-bookworm
+FROM python:3.14.6-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -20,4 +20,3 @@ USER 10001:10001
 EXPOSE 8080
 
 CMD ["uvicorn", "sub2api_recorder.app:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--no-access-log"]
-

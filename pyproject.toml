@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=75.0"]
+requires = ["setuptools>=83.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,25 +7,25 @@ name = "sub2api-recorder"
 version = "0.1.0"
 description = "Side-channel request audit recorder for Sub2API"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
-  "boto3==1.39.3",
-  "cryptography==45.0.5",
-  "fastapi==0.116.1",
-  "ijson==3.4.0",
+  "boto3==1.43.61",
+  "cryptography==49.0.0",
+  "fastapi==0.141.1",
+  "ijson==3.5.1",
   "loguru==0.7.3",
-  "psycopg[binary]==3.2.9",
+  "psycopg[binary]==3.3.4",
   "pydantic==2.13.4",
-  "python-multipart==0.0.20",
-  "uvicorn[standard]==0.35.0",
-  "zstandard==0.23.0",
+  "python-multipart==0.0.32",
+  "uvicorn[standard]==0.52.0",
+  "zstandard==0.25.0",
 ]
 
 [project.optional-dependencies]
 test = [
   "httpx==0.28.1",
-  "pytest==8.4.1",
-  "pytest-asyncio==1.1.0",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
 ]
 
 [project.scripts]

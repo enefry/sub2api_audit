@@ -227,7 +227,7 @@ docker compose run --rm sub2api-recorder \
 ## 本地开发与测试
 
 ```bash
-python3 -m venv .venv
+python3.14 -m venv .venv
 .venv/bin/pip install -r requirements-test.lock
 .venv/bin/pytest
 ```
