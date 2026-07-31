@@ -1,0 +1,27 @@
+services:
+  sub2api-recorder:
+    build:
+      context: .
+    container_name: sub2api_recorder
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:9203:8080"
+    volumes:
+      - ./data:/data
+    networks:
+      - sub2api_default
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    stop_grace_period: 30s
+
+networks:
+  sub2api_default:
+    external: true
+

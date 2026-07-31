@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sub2api-recorder"
+version = "0.1.0"
+description = "Side-channel request audit recorder for Sub2API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "boto3==1.39.3",
+  "cryptography==45.0.5",
+  "fastapi==0.116.1",
+  "ijson==3.4.0",
+  "loguru==0.7.3",
+  "psycopg[binary]==3.2.9",
+  "pydantic==2.13.4",
+  "python-multipart==0.0.20",
+  "uvicorn[standard]==0.35.0",
+  "zstandard==0.23.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx==0.28.1",
+  "pytest==8.4.1",
+  "pytest-asyncio==1.1.0",
+]
+
+[project.scripts]
+sub2api-recorder = "sub2api_recorder.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["sub2api_recorder*"]
+
+[tool.setuptools.package-data]
+sub2api_recorder = ["static/*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+asyncio_mode = "auto"
