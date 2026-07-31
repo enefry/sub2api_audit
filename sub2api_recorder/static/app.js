@@ -118,6 +118,7 @@ configureTimeFormatters(serviceTimezone);
 
 function setStatus(message, state = "ready") {
   statusText.textContent = message;
+  statusNode.title = message;
   statusNode.dataset.state = state;
 }
 

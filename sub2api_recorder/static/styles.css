@@ -152,7 +152,9 @@ h1, h2, h3, p { margin: 0; }
 
 .status-pill {
   display: inline-flex;
+  flex: 0 0 9.5rem;
   align-items: center;
+  justify-content: center;
   gap: .55rem;
   min-height: 36px;
   padding: 0 .85rem;
@@ -163,6 +165,7 @@ h1, h2, h3, p { margin: 0; }
   font-size: .78rem;
   font-weight: 650;
 }
+#status-text { min-width: 0; overflow: hidden; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
 
 .timezone-pill,
 .viewer-pill {
@@ -188,7 +191,7 @@ h1, h2, h3, p { margin: 0; }
 .viewer-pill small { display: block; line-height: 1.2; }
 .viewer-pill strong { max-width: 10rem; overflow: hidden; color: var(--text-soft); font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
 .viewer-pill small { margin-top: .12rem; color: var(--muted); font-size: .6rem; }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #74e0bd16; }
+.status-dot { flex: 0 0 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #74e0bd16; }
 .status-pill[data-state="loading"] .status-dot { animation: pulse 1.2s ease-in-out infinite; }
 .status-pill[data-state="error"] { color: var(--danger); border-color: #ff8f9140; background: var(--danger-soft); }
 .status-pill[data-state="error"] .status-dot { background: var(--danger); box-shadow: 0 0 0 4px #ff8f9118; }
