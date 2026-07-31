@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-HK">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Sub2API · 请求审计</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#audit-results">跳到审计结果</a>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Sub2API 审计首页">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span>
+          <strong>Sub2API</strong>
+          <small>Audit console</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <div class="viewer-pill" title="当前身份与可见范围">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+          </svg>
+          <span>
+            <strong id="viewer-label">正在识别身份</strong>
+            <small id="scope-label">同步权限范围</small>
+          </span>
+        </div>
+        <label id="audit-preference-control" class="audit-switch" hidden>
+          <span>
+            <strong>记录新请求</strong>
+            <small id="audit-preference-note">默认关闭</small>
+          </span>
+          <input id="audit-enabled" type="checkbox" role="switch" aria-describedby="audit-preference-note">
+          <i aria-hidden="true"></i>
+        </label>
+        <div class="timezone-pill" title="页面时间均使用服务时区">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
+          </svg>
+          <span id="timezone-label">正在同步时区</span>
+        </div>
+        <div id="status" class="status-pill" role="status" aria-live="polite" data-state="loading">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="status-text">正在载入</span>
+        </div>
+        <button id="refresh" class="button button-quiet button-icon-text" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7"/>
+          </svg>
+          <span>刷新</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <div id="audit-disabled-notice" class="notice notice-warning consent-notice" role="status" hidden>
+        <strong>新请求记录已关闭</strong>
+        <span>开启后才会采集你的后续请求；关闭不会删除已有历史记录。</span>
+      </div>
+
+      <section class="metrics" aria-label="当前结果概览">
+        <article class="metric-card metric-primary">
+          <div class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          </div>
+          <div>
+            <span>已加载请求</span>
+            <strong id="metric-count">—</strong>
+          </div>
+          <small id="metric-count-note">当前筛选</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3v18M7 8l5-5 5 5M5 21h14"/></svg>
+          </div>
+          <div>
+            <span>请求体积</span>
+            <strong id="metric-bytes">—</strong>
+          </div>
+          <small>已加载记录合计</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/><path d="M21 12a9 9 0 1 1-5.3-8.2"/></svg>
+          </div>
+          <div>
+            <span>JSON 可解析</span>
+            <strong id="metric-valid">—</strong>
+          </div>
+          <small id="metric-valid-note">等待数据</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div>
+            <span>查询窗口</span>
+            <strong id="metric-range">今天</strong>
+          </div>
+          <small id="metric-range-note">今天 00:00 至当前</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <form id="filters" class="filter-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="panel-kicker">FILTERS</span>
+              <h2>精确检索</h2>
+            </div>
+            <button id="reset-filters" class="text-button" type="button">重置条件</button>
+          </div>
+
+          <div class="filter-grid">
+            <label class="field field-wide">
+              <span>开始时间</span>
+              <input id="start" name="start" type="datetime-local" required>
+            </label>
+            <label class="field field-wide">
+              <span>结束时间</span>
+              <input id="end" name="end" type="datetime-local" required>
+            </label>
+            <label class="field">
+              <span>模型</span>
+              <input name="model" autocomplete="off" placeholder="例如 gpt-5">
+            </label>
+            <label class="field field-uri">
+              <span>URI 包含</span>
+              <input name="uri" autocomplete="off" placeholder="/v1/responses">
+            </label>
+            <label class="field">
+              <span>Token 后缀</span>
+              <input name="token" autocomplete="off" placeholder="例如 …9abc">
+            </label>
+            <label class="field">
+              <span>Key 名称</span>
+              <input name="key_name" autocomplete="off" placeholder="精确匹配">
+            </label>
+            <label id="username-filter-field" class="field" hidden>
+              <span>用户名</span>
+              <input name="username" autocomplete="off" placeholder="精确匹配">
+            </label>
+          </div>
+
+          <div class="filter-footer">
+            <p id="active-filter-summary">未设置额外筛选</p>
+            <button id="submit-filter" class="button button-primary" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              查询记录
+            </button>
+          </div>
+        </form>
+
+        <section id="audit-results" class="results-card" aria-labelledby="results-title">
+          <div class="results-heading">
+            <div>
+              <span class="panel-kicker">REQUEST LOG</span>
+              <h2 id="results-title">审计记录</h2>
+            </div>
+            <div class="results-heading-actions">
+              <div class="range-shortcuts" aria-label="快捷时间范围">
+                <div class="segmented-control">
+                  <button type="button" data-range="today" class="is-active">今天</button>
+                  <button type="button" data-range="1">1 小时</button>
+                  <button type="button" data-range="24">24 小时</button>
+                  <button type="button" data-range="168">7 天</button>
+                </div>
+              </div>
+              <p id="result-summary">正在读取…</p>
+            </div>
+          </div>
+
+          <div id="error-banner" class="notice notice-error" role="alert" hidden>
+            <strong>查询失败</strong>
+            <span id="error-message"></span>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>请求</th>
+                  <th>模型</th>
+                  <th>身份</th>
+                  <th>大小</th>
+                  <th>状态</th>
+                  <th><span class="visually-hidden">操作</span></th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-state" class="empty-state" hidden>
+            <span class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16M7 6V4h10v2M6 10h12v10H6z"/><path d="M9 14h6"/></svg>
+            </span>
+            <h3>没有匹配的请求</h3>
+            <p>尝试放宽时间范围，或移除部分筛选条件。</p>
+            <button id="empty-reset" class="button button-quiet" type="button">重置筛选</button>
+          </div>
+
+          <div class="results-footer">
+            <span id="pagination-note">每次最多载入 50 条</span>
+            <button id="more" class="button button-quiet" type="button" hidden>
+              载入更多
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="detail" aria-labelledby="detail-title">
+      <article class="detail-shell">
+        <header class="dialog-header">
+          <div class="dialog-title-group">
+            <span class="panel-kicker">REQUEST DETAIL <span id="detail-id"></span></span>
+            <h2 id="detail-title">请求详情</h2>
+          </div>
+          <div class="dialog-actions">
+            <button id="copy-body" class="button button-quiet button-compact" type="button" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+              <span>复制 JSON</span>
+            </button>
+            <label class="view-switch">
+              <span>完整内容</span>
+              <input id="full-body" type="checkbox" role="switch">
+              <i aria-hidden="true"></i>
+            </label>
+            <button id="close-detail" class="icon-button" type="button" aria-label="关闭详情">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="detail-layout">
+          <aside class="detail-sidebar">
+            <div class="detail-status-card">
+              <span id="detail-method" class="method-badge">POST</span>
+              <strong id="detail-model">—</strong>
+              <small id="detail-size">—</small>
+            </div>
+            <dl id="detail-meta"></dl>
+          </aside>
+          <section class="body-inspector" aria-labelledby="detail-body-heading">
+            <div class="body-toolbar">
+              <div>
+                <span class="panel-kicker">BODY INSPECTOR</span>
+                <h3 id="detail-body-heading">请求内容（精简）</h3>
+              </div>
+              <span id="body-render-note">优化预览</span>
+            </div>
+            <pre id="detail-body" tabindex="0">选择一条记录查看内容</pre>
+          </section>
+        </div>
+      </article>
+    </dialog>
+  </body>
+</html>
