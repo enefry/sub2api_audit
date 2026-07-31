@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "boto3==1.39.3",
-  "cryptography==45.0.5",
+  "cryptography==48.0.1",
   "fastapi==0.116.1",
   "ijson==3.4.0",
   "loguru==0.7.3",
