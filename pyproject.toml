@@ -17,7 +17,7 @@ dependencies = [
   "psycopg[binary]==3.3.4",
   "pydantic==2.13.4",
   "python-multipart==0.0.32",
-  "uvicorn[standard]==0.52.0",
+  "uvicorn[standard]==0.52.3",
   "zstandard==0.25.0",
 ]
 
