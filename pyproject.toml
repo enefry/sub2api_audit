@@ -9,7 +9,7 @@ description = "Side-channel request audit recorder for Sub2API"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-  "boto3==1.43.61",
+  "boto3==1.43.81",
   "cryptography==49.0.0",
   "fastapi==0.141.1",
   "ijson==3.5.1",
