@@ -11,7 +11,7 @@ requires-python = ">=3.14"
 dependencies = [
   "boto3==1.43.61",
   "cryptography==49.0.0",
-  "fastapi==0.141.1",
+  "fastapi==0.162.0",
   "ijson==3.5.1",
   "loguru==0.7.3",
   "psycopg[binary]==3.3.4",
